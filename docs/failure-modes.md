@@ -1,14 +1,14 @@
 # Legacy Page: Failure Modes
 
-Failure mode analysis now lives in detailed track documentation.
+Failure mode analysis now lives in detailed domain documentation.
 
 Primary references:
 
-- `tracks/track-2-reliability-engineering/resilience-and-recovery.md`
-- `tracks/track-3-scalability-and-monitoring/operations-playbook.md`
-- `tracks/track-3-scalability-and-monitoring/monitoring-and-alerting.md`
+- `reliability-and-bonus-quest/resilience-and-recovery.md`
+- `scalability-observability-and-operations/operations-playbook.md`
+- `scalability-observability-and-operations/monitoring-and-alerting.md`
 
 If you are troubleshooting an incident, start with:
 
-- `tracks/track-3-scalability-and-monitoring/operations-playbook.md`
+- `scalability-observability-and-operations/operations-playbook.md`
 

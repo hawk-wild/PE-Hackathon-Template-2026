@@ -1,4 +1,4 @@
-# Track 3 Load Testing Guide
+# Load Testing Guide
 
 ## Objective
 

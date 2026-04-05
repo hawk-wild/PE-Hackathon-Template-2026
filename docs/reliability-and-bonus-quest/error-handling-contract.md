@@ -1,4 +1,4 @@
-# Track 2 Error Handling Contract
+# Error Handling Contract
 
 ## Design principles
 

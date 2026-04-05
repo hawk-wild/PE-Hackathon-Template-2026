@@ -1,4 +1,4 @@
-# Track 1 Data Model and Validation
+# Data Model and Validation
 
 ## Why this page exists
 

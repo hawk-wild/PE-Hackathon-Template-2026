@@ -1,4 +1,4 @@
-# Track 1 Developer Workflow
+# Developer Workflow
 
 ## Local development (Python)
 
@@ -47,14 +47,14 @@ When you add or modify an API endpoint:
 2. Add route logic with explicit error handling.
 3. Add integration tests in `tests/test_integration.py`.
 4. Add error-path tests in `tests/test_error_handling.py`.
-5. Update track docs (`overview` and `api-reference`) for behavior changes.
+5. Update domain docs (`overview` and `api-reference`) for behavior changes.
 
 ## Debugging tips
 
-- Check structured logs through:
+- Check service logs through:
 
 ```bash
-curl "http://localhost:8000/logs?limit=50"
+docker compose logs --tail=100 app-1 app-2 app-3
 ```
 
 - Inspect runtime metrics through:

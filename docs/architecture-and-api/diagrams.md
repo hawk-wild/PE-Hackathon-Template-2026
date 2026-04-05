@@ -1,6 +1,6 @@
-# Track 1 Diagrams
+# Architecture and API Diagrams
 
-This page provides architecture and flow diagrams for the Core Service Foundations track.
+This page provides architecture and flow diagrams for the core service foundations domain.
 
 ## 1. System Component Diagram
 

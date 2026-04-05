@@ -1,12 +1,12 @@
-# Track 1: Core Service Foundations
+# Architecture and API Overview
 
 ## Who this section is for
 
 If you are new to this repository, start here. This section explains what the API does, how the data model is organized, and how requests flow through the system.
 
-## What this track delivers
+## What this section delivers
 
-Track 1 establishes the application's functional backbone:
+This section establishes the application's functional backbone:
 
 - User management (create, list, update, delete, bulk CSV import)
 - URL management (create, list, fetch, update, delete, redirect)
@@ -33,7 +33,7 @@ Core runtime pieces:
 3. Route handler resolves dependencies (DB session, background tasks).
 4. SQLAlchemy operations read/write PostgreSQL records.
 5. Response model serialization returns consistent JSON output.
-6. Request middleware logs timing/status metadata.
+6. Optional Prometheus instrumentation updates request metrics and system telemetry.
 
 ## API domains
 

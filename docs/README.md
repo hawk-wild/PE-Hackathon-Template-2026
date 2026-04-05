@@ -4,35 +4,35 @@ Welcome to the project documentation. This guide is written for someone who is o
 
 ## Documentation structure
 
-The docs are organized by implementation tracks so each concern can be read independently.
+The docs are organized by operational domains so each concern can be read independently.
 
-### Track 1: Core Service Foundations
+### Architecture and API
 
-- `tracks/track-1-core-service/overview.md`
-- `tracks/track-1-core-service/api-reference.md`
-- `tracks/track-1-core-service/data-model-and-validation.md`
-- `tracks/track-1-core-service/developer-workflow.md`
+- `architecture-and-api/overview.md`
+- `architecture-and-api/api-reference.md`
+- `architecture-and-api/data-model-and-validation.md`
+- `architecture-and-api/developer-workflow.md`
 
-### Track 2: Reliability Engineering
+### Reliability and Bonus Quest
 
-- `tracks/track-2-reliability-engineering/overview.md`
-- `tracks/track-2-reliability-engineering/error-handling-contract.md`
-- `tracks/track-2-reliability-engineering/resilience-and-recovery.md`
-- `tracks/track-2-reliability-engineering/bonus-quest-report.md`
+- `reliability-and-bonus-quest/overview.md`
+- `reliability-and-bonus-quest/error-handling-contract.md`
+- `reliability-and-bonus-quest/resilience-and-recovery.md`
+- `reliability-and-bonus-quest/bonus-quest-report.md`
 
-### Track 3: Scalability and Monitoring
+### Scalability, Observability, and Operations
 
-- `tracks/track-3-scalability-and-monitoring/overview.md`
-- `tracks/track-3-scalability-and-monitoring/load-testing.md`
-- `tracks/track-3-scalability-and-monitoring/monitoring-and-alerting.md`
-- `tracks/track-3-scalability-and-monitoring/operations-playbook.md`
+- `scalability-observability-and-operations/overview.md`
+- `scalability-observability-and-operations/load-testing.md`
+- `scalability-observability-and-operations/monitoring-and-alerting.md`
+- `scalability-observability-and-operations/operations-playbook.md`
 
 ## Recommended reading order for new contributors
 
-1. Track 1 overview and API reference
-2. Track 2 reliability overview and error contract
-3. Track 3 monitoring and operations playbook
+1. Architecture and API overview and API reference
+2. Reliability overview and error contract
+3. Monitoring guide and operations playbook
 
 ## Legacy pages
 
-The original top-level pages are retained for compatibility and now act as entry points into the new track-based documentation layout.
+The original top-level pages are retained for compatibility and now act as entry points into the domain-based documentation layout.

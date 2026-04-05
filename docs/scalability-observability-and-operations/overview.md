@@ -1,17 +1,18 @@
-# Track 3: Scalability and Monitoring
+# Scalability, Observability, and Operations Overview
 
-## What this track covers
+## What this section covers
 
-Track 3 documents horizontal scaling, load balancing, load-test methodology, and production-style monitoring/alerting.
+This section documents horizontal scaling, load balancing, load-test methodology, and production-style monitoring/alerting.
 
 Implemented artifacts in repository:
 
 - Multi-instance app deployment through Docker Compose
 - NGINX reverse proxy and load balancing
+- Redis-backed caching layer
 - K6 load testing scripts for bronze and silver intensity
 - Prometheus scraping and alert rules
 - Alertmanager routing for critical and warning alerts
-- Alert test helper script
+- Grafana dashboards for runtime trends
 
 ## Key files
 
@@ -22,17 +23,14 @@ Implemented artifacts in repository:
 - `monitoring/prometheus/prometheus.yml`
 - `monitoring/prometheus/alert_rules.yml`
 - `monitoring/alertmanager/alertmanager.yml`
-- `scripts/test_alerts.sh`
+- `monitoring/grafana/provisioning/`
+- `monitoring/grafana/dashboards/`
 
-## Track outcomes
+## Section outcomes
 
 - Increased throughput capacity using more than one app instance
 - Stable endpoint behavior under synthetic mixed workload
-- Monitoring stack for service health and error-rate alerts
-
-## Important configuration note
-
-`compose.yaml` currently contains two `services` blocks. In YAML, duplicate top-level keys can cause earlier blocks to be overwritten depending on parser behavior. For predictable deployments, keep one canonical service block before production use.
+- Monitoring stack for service health, latency, and error-rate alerts
 
 ## Related pages
 

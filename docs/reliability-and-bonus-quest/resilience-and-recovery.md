@@ -1,4 +1,4 @@
-# Track 2 Resilience and Recovery
+# Resilience and Recovery
 
 ## Reliability mechanisms
 
@@ -6,9 +6,9 @@
 
 Configured in `app/database.py`:
 
-- `pool_size=20`
-- `max_overflow=10`
-- `pool_timeout=30`
+- `pool_size` (default 20)
+- `max_overflow` (default 10)
+- `pool_timeout` (default 30)
 - `pool_pre_ping=True`
 
 Impact:
@@ -16,36 +16,33 @@ Impact:
 - stale connections are detected before use
 - controlled behavior under connection pressure
 
-### 2. Process recovery inside container
+### 2. Fleet resilience through service orchestration
 
-`docker-entrypoint.sh` runs uvicorn in an infinite restart loop:
-
-1. start uvicorn
-2. if process exits, log status
-3. sleep 1 second
-4. restart uvicorn
+`compose.yaml` runs one-time initialization (`app-init`) and three serving replicas (`app-1`, `app-2`, `app-3`) behind NGINX.
 
 Impact:
 
-- process crashes do not permanently take down containerized app runtime
+- failures on one replica do not fully take down the service
+- startup schema setup and optional seeding run once before traffic-serving replicas begin
 
 ### 3. Service health checks
 
 - `/health` endpoint returns `{"status": "ok"}`
-- compose DB healthcheck uses `pg_isready`
+- DB healthcheck uses `pg_isready`
+- Redis healthcheck verifies cache availability
 
 Impact:
 
 - startup dependency ordering and liveness verification become deterministic
 
-### 4. Safe async event logging
+### 4. Safe async event logging and cache fallback
 
-URL workflows emit events through FastAPI background tasks.
+URL workflows emit events through FastAPI background tasks, and cache operations are wrapped to fail open.
 
 Impact:
 
 - request responses are not blocked by non-critical event persistence
-- event logging failures do not block the primary URL operation
+- Redis outages degrade performance, not correctness
 
 ## Recovery runbook (quick)
 
@@ -58,7 +55,7 @@ docker compose ps
 2. Inspect application logs:
 
 ```bash
-docker compose logs --tail=200 app
+docker compose logs --tail=200 app-1 app-2 app-3
 ```
 
 3. Verify app responsiveness:
@@ -70,13 +67,13 @@ curl http://localhost:8000/health
 4. Inspect diagnostics:
 
 ```bash
+curl http://localhost:8000/metrics
 curl http://localhost:8000/metrics/json
-curl "http://localhost:8000/logs?limit=50"
 ```
 
 ## Known limitations
 
-- No explicit readiness endpoint with DB ping yet.
+- No explicit readiness endpoint that performs DB and Redis dependency checks.
 - No distributed tracing IDs in request logs.
 - No retry queue/dead-letter behavior for background task failures.
 

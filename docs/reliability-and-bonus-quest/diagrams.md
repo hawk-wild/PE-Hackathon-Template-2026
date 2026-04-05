@@ -1,4 +1,4 @@
-# Track 2 Diagrams
+# Reliability Diagrams
 
 This page contains reliability-focused diagrams: error handling, recovery, and observability loops.
 
@@ -16,18 +16,21 @@ flowchart TD
   Crash -- No --> Ok[Return success response]
 ```
 
-## 2. Process Recovery Loop
+## 2. Fleet Startup and Recovery Flow
 
 ```mermaid
 flowchart TD
-  Start[Container starts] --> Entrypoint[docker-entrypoint.sh]
-  Entrypoint --> Uvicorn[Start uvicorn]
-  Uvicorn --> Run[App serves traffic]
-  Run --> Exit{Process exits unexpectedly?}
-  Exit -- No --> Run
-  Exit -- Yes --> Sleep[Wait 1 second]
-  Sleep --> Restart[Restart uvicorn]
-  Restart --> Run
+  DB[(PostgreSQL)] --> Init[app-init]
+  Redis[(Redis)] --> Init
+  Init --> A1[app-1]
+  Init --> A2[app-2]
+  Init --> A3[app-3]
+  A1 --> LB[NGINX]
+  A2 --> LB
+  A3 --> LB
+  Fail{Replica failure?} -->|yes| Recover[Restart failed replica]
+  Recover --> LB
+  Fail -->|no| LB
 ```
 
 ## 3. Reliability Observability Feedback Loop

@@ -1,4 +1,4 @@
-# Track 2 Bonus Quest Report
+# Bonus Quest Validation Report
 
 ## Summary
 
@@ -15,15 +15,15 @@ The Bonus Quest reliability implementation is complete for the current codebase 
 ### Runtime resilience
 
 - [x] DB pool pre-ping to reduce stale-connection issues
-- [x] process restart loop in container entrypoint
-- [x] service health endpoint available
+- [x] multi-replica service deployment with startup initialization gate
+- [x] service health endpoints and container healthchecks
+- [x] Redis cache fail-open behavior
 
 ### Observability support
 
 - [x] structured JSON logs
-- [x] request timing/status logging
-- [x] host/process metrics endpoint
-- [x] recent log retrieval endpoint
+- [x] Prometheus metrics endpoint (`/metrics`)
+- [x] host/process diagnostics endpoint (`/metrics/json`)
 
 ## Test validation
 
@@ -44,11 +44,11 @@ Latest known suite result in this workspace context:
 A practical resilience drill is available:
 
 1. run stack
-2. kill app process inside container
-3. verify process auto-restart
-4. verify `/health` success after restart
+2. stop one app replica container
+3. verify traffic still succeeds through NGINX
+4. verify `/health` and Prometheus targets recover after replica restart
 
-This demonstrates that runtime crashes are recoverable without manual app re-deployment.
+This demonstrates that partial fleet failure is recoverable without full service redeployment.
 
 ## Improvement roadmap
 

@@ -1,4 +1,4 @@
-# Track 1 API Reference
+# API Reference
 
 This reference focuses on behavior a consumer of the API needs to understand quickly.
 

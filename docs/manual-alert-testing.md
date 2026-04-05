@@ -16,7 +16,7 @@ Current notification timing in `monitoring/alertmanager/alertmanager.yml`:
 Run from project root:
 
 ```bash
-cd /home/cryptosaiyan/Documents/PE-Hackathon-Template-2026
+cd /path/to/PE-Hackathon-Template-2026
 ```
 
 Ensure Docker and Docker Compose are available:

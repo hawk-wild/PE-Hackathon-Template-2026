@@ -1,4 +1,4 @@
-# Track 3 Operations Playbook
+# Operations Playbook
 
 ## In Case of Emergency (Alert Fired)
 
@@ -184,7 +184,7 @@ curl http://localhost:8000/metrics/json
 ## Incident triage flow
 
 1. Check if app is down or degraded.
-2. Correlate alert type (`ServiceDown`, `HighErrorRate`, `HighCPU`).
+2. Correlate alert type (`ServiceFleetDown`, `AppInstanceDown`, `HighErrorRate`, `HighCPUReplica`).
 3. Inspect app logs and request latency patterns.
 4. Confirm DB health and connectivity.
 5. Decide whether to scale out app replicas or restart affected services.

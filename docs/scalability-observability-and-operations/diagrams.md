@@ -1,4 +1,4 @@
-# Track 3 Diagrams
+# Scalability and Monitoring Diagrams
 
 This page visualizes scale-out architecture, load testing progression, and monitoring pipelines.
 
@@ -53,7 +53,7 @@ sequenceDiagram
   participant DB as PostgreSQL
 
   Client->>NGINX: HTTP request
-  NGINX->>App: Forward request (round robin)
+  NGINX->>App: Forward request (least connections)
   App->>DB: Execute query/mutation
   DB-->>App: Data
   App-->>NGINX: HTTP response
