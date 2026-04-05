@@ -120,12 +120,13 @@ def get_urls(
 
 
 @router.get("/{id}", response_model=URLOut)
-def get_url(id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+def get_url(id: int, response: Response, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     redis_client = get_redis_client()
     cache_key = f"url:{id}"
     cached = get_cache(redis_client, cache_key)
     if cached is not None:
         # DB write operation is removed from cache hits to preserve DB connections under load
+        response.headers["X-Cache"] = "HIT"
         return cached
 
     url = db.query(URL).filter(URL.id == id).first()
@@ -134,6 +135,8 @@ def get_url(id: int, background_tasks: BackgroundTasks, db: Session = Depends(ge
 
     url_out = URLOut.model_validate(url)
     set_cache(redis_client, cache_key, url_out, ttl=60)
+    
+    response.headers["X-Cache"] = "MISS"
     
     _schedule_event(
         background_tasks,
