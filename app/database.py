@@ -1,30 +1,20 @@
 import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
 
-from peewee import DatabaseProxy, Model, PostgresqlDatabase
+load_dotenv()
 
-db = DatabaseProxy()
+DATABASE_URL = f"postgresql://{os.environ.get('DATABASE_USER', 'postgres')}:{os.environ.get('DATABASE_PASSWORD', 'postgres')}@{os.environ.get('DATABASE_HOST', 'localhost')}:{os.environ.get('DATABASE_PORT', '5432')}/{os.environ.get('DATABASE_NAME', 'hackathon_db')}"
 
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
 
-class BaseModel(Model):
-    class Meta:
-        database = db
-
-
-def init_db(app):
-    database = PostgresqlDatabase(
-        os.environ.get("DATABASE_NAME", "hackathon_db"),
-        host=os.environ.get("DATABASE_HOST", "localhost"),
-        port=int(os.environ.get("DATABASE_PORT", 5432)),
-        user=os.environ.get("DATABASE_USER", "postgres"),
-        password=os.environ.get("DATABASE_PASSWORD", "postgres"),
-    )
-    db.initialize(database)
-
-    @app.before_request
-    def _db_connect():
-        db.connect(reuse_if_open=True)
-
-    @app.teardown_appcontext
-    def _db_close(exc):
-        if not db.is_closed():
-            db.close()
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
