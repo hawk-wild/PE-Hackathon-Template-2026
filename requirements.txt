@@ -16,7 +16,9 @@ idna==3.11
 itsdangerous==2.2.0
 jinja2==3.1.6
 markupsafe==3.0.3
+orjson
 peewee==4.0.4
+prometheus-client
 prometheus-fastapi-instrumentator==7.1.0
 psutil==7.1.0
 psycopg2-binary==2.9.11
@@ -24,6 +26,7 @@ pydantic==2.12.5
 pydantic-core==2.41.5
 python-dotenv==1.2.2
 python-multipart==0.0.22
+redis>=5.0.0
 requests==2.33.1
 sqlalchemy==2.0.49
 typing-extensions==4.15.0

@@ -7,6 +7,7 @@ from app.models.schemas import UserCreate, UserOut, UserUpdate
 from typing import List
 from app.utils import parse_users_csv
 from pydantic import ValidationError
+from app.cache import get_redis_client, get_cache, set_cache, invalidate_cache
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -63,16 +64,33 @@ def get_users(
     per_page: int = Query(default=10, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
+    redis_client = get_redis_client()
+    cache_key = f"users:page={page}:per_page={per_page}"
+    cached = get_cache(redis_client, cache_key)
+    if cached is not None:
+        return cached
+
     skip = (page - 1) * per_page
     users = db.query(User).offset(skip).limit(per_page).all()
-    return users
+    users_out = [UserOut.model_validate(u) for u in users]
+    set_cache(redis_client, cache_key, users_out, ttl=60)
+    return users_out
 
 @router.get("/{id}", response_model=UserOut)
 def get_user(id: int, db: Session = Depends(get_db)):
+    redis_client = get_redis_client()
+    cache_key = f"user:{id}"
+    cached = get_cache(redis_client, cache_key)
+    if cached is not None:
+        return cached
+
     user = db.query(User).filter(User.id == id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    return user
+    
+    user_out = UserOut.model_validate(user)
+    set_cache(redis_client, cache_key, user_out, ttl=300)
+    return user_out
 
 @router.post("", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
@@ -87,6 +105,9 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    
+    invalidate_cache(get_redis_client(), "users:*")
+    
     return db_user
 
 @router.put("/{id}", response_model=UserOut)
@@ -104,6 +125,11 @@ def update_user(id: int, user: UserUpdate, db: Session = Depends(get_db)):
         
     db.commit()
     db.refresh(db_user)
+    
+    redis_client = get_redis_client()
+    invalidate_cache(redis_client, f"user:{id}")
+    invalidate_cache(redis_client, "users:*")
+    
     return db_user
 
 
