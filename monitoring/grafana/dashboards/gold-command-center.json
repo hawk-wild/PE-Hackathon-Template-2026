@@ -55,7 +55,7 @@
       "id": 3,
       "targets": [
         {
-          "expr": "100 * sum(rate(http_requests_total{job=\"url-shortener-apps\",status=~\"5..\"}[5m])) / clamp_min(sum(rate(http_requests_total{job=\"url-shortener-apps\"}[5m])), 1)",
+          "expr": "100 * (sum(rate(http_requests_total{job=\"url-shortener-apps\",status=~\"5..\"}[5m])) or vector(0)) / clamp_min((sum(rate(http_requests_total{job=\"url-shortener-apps\"}[5m])) or vector(0)), 1)",
           "legendFormat": "fleet 5xx %",
           "refId": "A"
         }
