@@ -1,31 +1,82 @@
 # Failure Modes
 
-## Bad input
+This document catalogs likely failure scenarios and the current mitigation strategy implemented in this repository.
 
-- Invalid request bodies return JSON validation errors with `422 Unprocessable Entity`.
-- Unsupported file uploads return JSON `400` responses such as `{"detail": "Only CSV files allowed"}`.
-- Missing resources return JSON `404` responses such as `{"detail": "User not found"}` or `{"detail": "URL not found"}`.
+## Failure Matrix
 
-## Unexpected server errors
+| Failure Mode | Detection | Current Behavior | Mitigation Implemented |
+|---|---|---|---|
+| Invalid request payload | FastAPI/Pydantic validation | `422` JSON with `detail` array | Schema-based validation in request models |
+| Missing referenced data (user/url) | Route logic checks | `404` JSON with explicit message | Early existence checks before mutation |
+| Unsupported upload type | Route validation | `400` JSON (`Only CSV files allowed`) | Content/filename gate in bulk upload route |
+| Unhandled application exception | Global exception handler | `500` JSON (`Internal Server Error`) | Exception normalization to avoid leaks |
+| DB connection stale/dead | SQLAlchemy pool checkout | Retry with pre-ping validation | `pool_pre_ping=True` in DB engine |
+| App process crash in container | Process exit/logs/healthcheck | Process restarted in-container | Restart loop in `docker-entrypoint.sh` |
+| Container restart/host reboot | Docker runtime | Container auto-restarted | `restart: unless-stopped` in compose |
 
-- Unhandled exceptions are converted into `500 Internal Server Error` with the JSON body `{"detail": "Internal Server Error"}`.
-- This prevents stack traces from leaking to API clients.
+## Application-Level Failures
 
-## Container crashes
+### Input and Contract Failures
 
-- The `app` and `db` services in [compose.yaml](../compose.yaml) use `restart: unless-stopped`.
-- The app container also runs through a tiny supervisor script in [docker-entrypoint.sh](../docker-entrypoint.sh), so if the web process crashes, it is started again automatically inside the container.
+- `422`: malformed request payloads
+- `400`: unsupported file upload in `POST /users/bulk`
+- `404`: missing resources and unknown routes
 
-## Chaos demo
+These paths keep failure responses predictable for clients and are covered by tests.
 
-1. Start the stack:
-   `docker compose up -d --build`
-2. Confirm both services are running:
-   `docker compose ps`
-3. Crash the web process inside the app container:
-   `docker exec hackathon-app python -c "import os, signal; [os.kill(int(pid), signal.SIGKILL) for pid in os.listdir('/proc') if pid.isdigit() and pid != '1' and b'uvicorn' in open(f'/proc/{pid}/cmdline', 'rb').read()]" `
-4. Watch the supervisor bring it back:
-   `docker compose logs app`
-5. Confirm the service stays available:
-   `docker compose ps`
-   `curl http://127.0.0.1:8080/health`
+### Unexpected Exceptions
+
+Unhandled exceptions are mapped to a safe, generic JSON response:
+
+```json
+{"detail": "Internal Server Error"}
+```
+
+The same failures are still logged through observability middleware/handlers.
+
+## Runtime and Infrastructure Failures
+
+### Process Crash (Inside App Container)
+
+The app entrypoint is a simple supervisor loop:
+
+1. Start uvicorn.
+2. If uvicorn exits, log status.
+3. Sleep 1 second.
+4. Restart uvicorn.
+
+This improves resilience to transient process-level crashes without requiring an immediate container restart.
+
+### Container Failure
+
+Both `app` and `db` services use:
+
+```yaml
+restart: unless-stopped
+```
+
+This gives baseline self-healing at container orchestration level.
+
+### Dependency Startup Ordering
+
+`app` waits for healthy `db`:
+
+- DB healthcheck uses `pg_isready`
+- `depends_on` is configured with `condition: service_healthy`
+
+This reduces startup race failures where app boots before the database can accept connections.
+
+## Known Reliability Gaps
+
+- No explicit readiness endpoint distinct from liveness.
+- No circuit breaker/retry policy at application call level (future concern if external dependencies are added).
+- No autoscaling policy documented yet.
+- No alerting pipeline attached to `/metrics` and `/logs` data.
+
+## Related Documents
+
+- `docs/error-handling.md`
+- `docs/observability.md`
+- `docs/resilience-runbook.md`
+- `docs/reliability-bonus-quest.md`
+
