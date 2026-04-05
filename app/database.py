@@ -10,8 +10,8 @@ DATABASE_URL = f"postgresql://{os.environ.get('DATABASE_USER', 'postgres')}:{os.
 
 engine = create_engine(
     DATABASE_URL,
-    pool_size=20,          # Keep 20 connections open and ready
-    max_overflow=10,       # Allow up to 10 extra connections during spikes
+    pool_size=50,          # Keep 50 connections open and ready per replica
+    max_overflow=100,      # Allow up to 100 extra connections during spikes
     pool_timeout=30,       # Max seconds to wait for a connection
     pool_pre_ping=True,    # Check connection is alive before using it
 )
