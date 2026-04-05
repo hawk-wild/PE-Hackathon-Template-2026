@@ -1,5 +1,7 @@
 # Production Ready URL shortener
 
+For detailed documentation, visit the published GitBook: https://hawk-wild.gitbook.io/untitled
+
 Production-style URL shortener service built for the MLH PE Hackathon tracks:
 
 - Reliability Engineering
@@ -121,11 +123,10 @@ docker compose down -v --remove-orphans
 
 - `GET /metrics`
 - `GET /metrics/json`
-- `GET /logs`
 
 Detailed API contract:
 
-- [docs/tracks/track-1-core-service/api-reference.md](docs/tracks/track-1-core-service/api-reference.md)
+- [API Reference](https://hawk-wild.gitbook.io/untitled/api-reference)
 
 ## Reliability Engineering
 
@@ -155,8 +156,8 @@ Implemented:
 
 Key docs:
 
-- [docs/error-handling.md](docs/error-handling.md)
-- [docs/tracks/track-2-reliability-engineering/error-handling-contract.md](docs/tracks/track-2-reliability-engineering/error-handling-contract.md)
+- [Error Handling Contract](https://hawk-wild.gitbook.io/untitled/error-handling-contract)
+- [Reliability and Bonus Quest Overview](https://hawk-wild.gitbook.io/untitled/overview-1)
 
 ### Gold
 
@@ -175,9 +176,9 @@ Implemented:
 
 Key docs:
 
-- [docs/failure-modes.md](docs/failure-modes.md)
-- [docs/resilience-runbook.md](docs/resilience-runbook.md)
-- [docs/tracks/track-2-reliability-engineering/resilience-and-recovery.md](docs/tracks/track-2-reliability-engineering/resilience-and-recovery.md)
+- [Resilience and Recovery](https://hawk-wild.gitbook.io/untitled/resilience-and-recovery)
+- [Bonus Quest Validation Report](https://hawk-wild.gitbook.io/untitled/bonus-quest-report)
+- [Reliability Diagrams](https://hawk-wild.gitbook.io/untitled/diagrams-1)
 
 ## Scalability Engineering
 
@@ -252,8 +253,9 @@ The strongest proof points are:
 
 Scalability docs:
 
-- [docs/tracks/track-3-scalability-and-monitoring/load-testing.md](docs/tracks/track-3-scalability-and-monitoring/load-testing.md)
-- [docs/tracks/track-3-scalability-and-monitoring/operations-playbook.md](docs/tracks/track-3-scalability-and-monitoring/operations-playbook.md)
+- [Scalability, Observability, and Operations Overview](https://hawk-wild.gitbook.io/untitled/overview-2)
+- [Load Testing Guide](https://hawk-wild.gitbook.io/untitled/load-testing)
+- [Operations Playbook](https://hawk-wild.gitbook.io/untitled/operations-playbook)
 
 ## Incident Response
 
@@ -263,13 +265,12 @@ Implemented:
 
 - structured JSON logging
 - metrics endpoints
-- log access without SSH via `/logs`
+
 
 Verify:
 
 ```bash
 curl http://127.0.0.1:8000/metrics/json
-curl "http://127.0.0.1:8000/logs?limit=20"
 ```
 
 ### Silver
@@ -285,7 +286,7 @@ Key files:
 
 - [monitoring/prometheus/alert_rules.yml](monitoring/prometheus/alert_rules.yml)
 - [monitoring/alertmanager/alertmanager.yml](monitoring/alertmanager/alertmanager.yml)
-- [docs/manual-alert-testing.md](docs/manual-alert-testing.md)
+- [Monitoring and Alerting](https://hawk-wild.gitbook.io/untitled/monitoring-and-alerting)
 
 ### Gold
 
@@ -298,9 +299,9 @@ Implemented:
 
 Key docs:
 
-- [docs/observability.md](docs/observability.md)
-- [docs/resilience-runbook.md](docs/resilience-runbook.md)
-- [docs/tracks/track-3-scalability-and-monitoring/monitoring-and-alerting.md](docs/tracks/track-3-scalability-and-monitoring/monitoring-and-alerting.md)
+- [Monitoring and Alerting](https://hawk-wild.gitbook.io/untitled/monitoring-and-alerting)
+- [Operations Playbook](https://hawk-wild.gitbook.io/untitled/operations-playbook)
+- [Scalability and Monitoring Diagrams](https://hawk-wild.gitbook.io/untitled/diagrams-2)
 - [monitoring/grafana/dashboards/gold-command-center.json](monitoring/grafana/dashboards/gold-command-center.json)
 
 ## Documentation Quest
@@ -331,11 +332,13 @@ Included:
 
 Documentation index:
 
-- [docs/README.md](docs/README.md)
-- [docs/SUMMARY.md](docs/SUMMARY.md)
-- [docs/tracks/track-1-core-service/diagrams.md](docs/tracks/track-1-core-service/diagrams.md)
-- [docs/tracks/track-2-reliability-engineering/diagrams.md](docs/tracks/track-2-reliability-engineering/diagrams.md)
-- [docs/tracks/track-3-scalability-and-monitoring/diagrams.md](docs/tracks/track-3-scalability-and-monitoring/diagrams.md)
+- [Complete Documentation](https://hawk-wild.gitbook.io/untitled)
+- [Architecture and API Overview](https://hawk-wild.gitbook.io/untitled/overview)
+- [Reliability and Bonus Quest Overview](https://hawk-wild.gitbook.io/untitled/overview-1)
+- [Scalability, Observability, and Operations Overview](https://hawk-wild.gitbook.io/untitled/overview-2)
+- [Architecture Diagrams](https://hawk-wild.gitbook.io/untitled/diagrams)
+- [Reliability Diagrams](https://hawk-wild.gitbook.io/untitled/diagrams-1)
+- [Scalability and Monitoring Diagrams](https://hawk-wild.gitbook.io/untitled/diagrams-2)
 
 ## Testing
 
