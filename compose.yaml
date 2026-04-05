@@ -23,6 +23,7 @@ services:
       - DATABASE_PASSWORD=postgres
       - DATABASE_NAME=hackathon_db
       - DATABASE_PORT=5432
+      - ENABLE_STARTUP_SEED=true
     depends_on:
       db:
         condition: service_healthy
@@ -37,6 +38,7 @@ services:
       - DATABASE_PASSWORD=postgres
       - DATABASE_NAME=hackathon_db
       - DATABASE_PORT=5432
+      - ENABLE_STARTUP_SEED=true
     depends_on:
       db:
         condition: service_healthy
@@ -51,6 +53,7 @@ services:
       - DATABASE_PASSWORD=postgres
       - DATABASE_NAME=hackathon_db
       - DATABASE_PORT=5432
+      - ENABLE_STARTUP_SEED=true
     depends_on:
       db:
         condition: service_healthy
@@ -106,6 +109,7 @@ services:
       DATABASE_PASSWORD: postgres
       DATABASE_NAME: hackathon_db
       LOG_LEVEL: INFO
+      ENABLE_STARTUP_SEED: "true"
     depends_on:
       postgres:
         condition: service_healthy

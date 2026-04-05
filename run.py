@@ -1,6 +1,7 @@
 import csv
 import json
 import logging
+import os
 import time
 from pathlib import Path
 
@@ -164,7 +165,8 @@ def seed_database() -> None:
 def startup() -> None:
     try:
         Base.metadata.create_all(bind=engine)
-        seed_database()
+        if os.getenv("ENABLE_STARTUP_SEED", "").lower() in {"1", "true", "yes", "on"}:
+            seed_database()
     except Exception as exc:
         logger.exception(
             "Startup database initialization failed",
