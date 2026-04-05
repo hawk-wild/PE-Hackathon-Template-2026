@@ -1,51 +1,71 @@
-# Alert rules for the URL Shortener
-# These rules are evaluated by Prometheus every 15 seconds.
-
 groups:
-  - name: app_alerts
+  - name: scalability_alerts
     rules:
-
-      # ---------------------------------------------------------------
-      # CRITICAL: Service is completely unreachable
-      # Fires if Prometheus cannot scrape the app for 2 minutes.
-      # ---------------------------------------------------------------
-      - alert: ServiceDown
-        expr: up{job="app"} == 0
+      - alert: AppInstanceDown
+        expr: up{job="url-shortener-apps"} == 0
         for: 2m
         labels:
-          severity: critical
+          severity: warning
+          service: url-shortener
         annotations:
-          summary: "  Service DOWN — {{ $labels.instance }}"
-          description: "The app has been unreachable for more than 2 minutes. Immediate action required."
+          summary: "Replica down: {{ $labels.instance }}"
+          description: "One application replica has been unreachable for more than 2 minutes."
 
-      # ---------------------------------------------------------------
-      # CRITICAL: Too many HTTP 5xx errors
-      # Fires if >5% of requests return 5xx for 5 minutes.
-      # Uses safe division (> 0 guard) to avoid NaN when no traffic.
-      # ---------------------------------------------------------------
+      - alert: ServiceFleetDown
+        expr: sum(up{job="url-shortener-apps"}) == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: url-shortener
+        annotations:
+          summary: "All app replicas are down"
+          description: "Prometheus cannot reach any FastAPI replica behind the load balancer."
+
+      - alert: LoadBalancerDown
+        expr: up{job="url-shortener-lb"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: url-shortener-lb
+        annotations:
+          summary: "Load balancer is down"
+          description: "The Nginx entrypoint is unreachable, so external traffic cannot enter the service."
+
       - alert: HighErrorRate
         expr: |
           (
-            sum(rate(http_requests_total{status=~"5.."}[5m]))
+            sum(rate(http_requests_total{job="url-shortener-apps",status=~"5.."}[5m]))
             /
-            (sum(rate(http_requests_total[5m])) > 0)
+            clamp_min(sum(rate(http_requests_total{job="url-shortener-apps"}[5m])), 1)
           ) > 0.05
         for: 5m
         labels:
           severity: critical
+          service: url-shortener
         annotations:
-          summary: "🚨 High error rate — {{ $value | humanizePercentage }} of requests failing"
-          description: "More than 5% of HTTP requests returned 5xx errors over the last 5 minutes."
+          summary: "High 5xx error rate across the fleet"
+          description: "More than 5% of requests across app-1/app-2/app-3 returned 5xx responses over the last 5 minutes."
 
-      # ---------------------------------------------------------------
-      # WARNING: CPU too hot (no wake-up, just awareness)
-      # Fires if host CPU exceeds 90% for 2 minutes.
-      # ---------------------------------------------------------------
-      - alert: HighCPU
-        expr: process_cpu_usage_percent > 90
+      - alert: HighLatencyP95
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum by (le) (rate(http_request_duration_seconds_bucket{job="url-shortener-apps"}[5m]))
+          ) > 3
+        for: 5m
+        labels:
+          severity: warning
+          service: url-shortener
+        annotations:
+          summary: "p95 latency is above 3 seconds"
+          description: "The fleet-wide p95 latency has exceeded the Silver scalability target for more than 5 minutes."
+
+      - alert: HighCPUReplica
+        expr: process_cpu_usage_percent{job="url-shortener-apps"} > 90
         for: 2m
         labels:
           severity: warning
+          service: url-shortener
         annotations:
-          summary: "⚠️ High CPU usage — {{ $value }}%"
-          description: "CPU usage has been above 90% for more than 2 minutes."
+          summary: "High CPU on {{ $labels.instance }}"
+          description: "One app replica has sustained CPU usage above 90% for more than 2 minutes."

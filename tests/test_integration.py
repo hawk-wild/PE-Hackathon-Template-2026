@@ -208,12 +208,13 @@ def test_delete_user_removes_user_and_related_records(client, db_session) -> Non
 
     db_session.add(Event(url_id=url.id, user_id=user.id, event_type="created", details={"short_code": url.short_code}))
     db_session.commit()
+    url_id = url.id
 
     response = client.delete(f"/users/{user.id}")
 
     assert response.status_code == 204
     assert db_session.query(User).filter(User.id == user.id).first() is None
-    assert db_session.query(URL).filter(URL.id == url.id).first() is None
+    assert db_session.query(URL).filter(URL.id == url_id).first() is None
     assert db_session.query(Event).filter(Event.user_id == user.id).all() == []
 
 
