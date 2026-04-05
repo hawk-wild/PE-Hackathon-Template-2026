@@ -19,3 +19,21 @@ EXPOSE 8000
 
 # Start Uvicorn via the run.py script (which spins up 4 workers per container!)
 CMD ["uv", "run", "python", "run.py"]
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY app ./app
+COPY seed_data ./seed_data
+COPY docker-entrypoint.sh ./
+COPY run.py ./
+
+RUN chmod +x /app/docker-entrypoint.sh
+
+EXPOSE 8000
+
+CMD ["/app/docker-entrypoint.sh"]
